@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { fetchEvent, fetchTeams, fetchTeamMedia } from '../../util/TBAAPI'
-import { SET_EVENT_KEY } from '../../constants/BroadcastTypes'
+import { SET_EVENT_KEY, SET_SWAP_RED_BLUE } from '../../constants/BroadcastTypes'
 
 const Container = styled.div`
   position: absolute;
@@ -11,7 +11,7 @@ const Container = styled.div`
   left: 16px;
   display: flex;
   flex-direction: column;
-  flex-wrap: wrap;
+  flex-wrap: ${props => props.swap ? 'wrap-reverse' : 'wrap'};
   justify-content: space-around;
   align-content: space-between;
 
@@ -66,6 +66,7 @@ export default class VideoOverlay extends React.Component {
     this.twitch = window.Twitch ? window.Twitch.ext : null
     this.state = {
       event: null,
+      swapRedBlue: false,
       teams: {},
       images: {},
       hoveredTeamKey: null,
@@ -113,6 +114,7 @@ export default class VideoOverlay extends React.Component {
           fetchEvent(config.eventKey).then(event => {
             this.setState({event});
           });
+          this.setState({swapRedBlue: config.swapRedBlue})
         }
       })
 
@@ -120,10 +122,15 @@ export default class VideoOverlay extends React.Component {
       this.twitch.listen('broadcast', (target, contentType, body) => {
         this.twitch.rig.log(`New PubSub message!\n${target}\n${contentType}\n${body}`)
         const broadcast = JSON.parse(body)
-        if (broadcast.type === SET_EVENT_KEY) {
-          fetchEvent(broadcast.eventKey).then(event => {
-            this.setState({event});
-          });
+        switch (broadcast.type) {
+          case SET_EVENT_KEY:
+            fetchEvent(broadcast.eventKey).then(event => {
+              this.setState({event});
+            });
+            break;
+          case SET_SWAP_RED_BLUE:
+            this.setState({swapRedBlue: broadcast.swapRedBlue})
+            break;
         }
       })
     }
@@ -136,11 +143,11 @@ export default class VideoOverlay extends React.Component {
   }
 
   render() {
-    const { event, teams, images, hoveredTeamKey } = this.state
+    const { swapRedBlue, event, teams, images, hoveredTeamKey } = this.state
     const team = teams[hoveredTeamKey]
     if (event) {
       return (
-        <Container>
+        <Container swap={swapRedBlue}>
           {['frc254', 'frc604','frc971'].map(key =>
             <RobotImageContainer
               key={key}

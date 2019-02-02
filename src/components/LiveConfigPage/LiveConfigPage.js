@@ -1,7 +1,7 @@
 import React from 'react'
 import Authentication from '../../util/Authentication/Authentication'
 import { fetchEvent } from '../../util/TBAAPI'
-import { SET_EVENT_KEY } from '../../constants/BroadcastTypes'
+import { SET_EVENT_KEY, SET_SWAP_RED_BLUE } from '../../constants/BroadcastTypes'
 
 import './LiveConfigPage.css'
 
@@ -17,11 +17,13 @@ export default class LiveConfigPage extends React.Component {
       theme: 'light',
       eventKey: '',
       event: undefined,
+      swapRedBlue: false,
     }
 
     this.handleEventKeyChange = this.handleEventKeyChange.bind(this)
     this.handleEventKeySubmit = this.handleEventKeySubmit.bind(this)
     this.handleEventSubmit = this.handleEventSubmit.bind(this)
+    this.handleSwapChange = this.handleSwapChange.bind(this)
   }
 
   contextUpdate(context, delta) {
@@ -49,12 +51,25 @@ export default class LiveConfigPage extends React.Component {
     e.preventDefault()
     this.twitch.configuration.set('broadcaster', '1.0', JSON.stringify({
       eventKey: this.state.eventKey,
+      swapRedBlue: this.state.swapRedBlue,
     }))
     this.twitch.send('broadcast', 'application/json', {
       type: SET_EVENT_KEY,
       eventKey: this.state.eventKey,
     })
     this.setState({event: undefined})
+  }
+
+  handleSwapChange() {
+    this.twitch.configuration.set('broadcaster', '1.0', JSON.stringify({
+      eventKey: this.state.eventKey,
+      swapRedBlue: !this.state.swapRedBlue,
+    }))
+    this.twitch.send('broadcast', 'application/json', {
+      type: SET_SWAP_RED_BLUE,
+      swapRedBlue: !this.state.swapRedBlue,
+    })
+    this.setState(state => ({swapRedBlue: !this.state.swapRedBlue}))
   }
 
   componentDidMount() {
@@ -77,14 +92,17 @@ export default class LiveConfigPage extends React.Component {
       this.twitch.configuration.onChanged(() => {
         const config = this.twitch.configuration.broadcaster ? JSON.parse(this.twitch.configuration.broadcaster.content) : null
         if (config) {
-          this.setState({eventKey: config.eventKey})
+          this.setState({
+            eventKey: config.eventKey,
+            swapRedBlue: config.swapRedBlue,
+          })
         }
       })
     }
   }
 
   render() {
-    const { finishedLoading, theme, eventKey, event } = this.state
+    const { finishedLoading, theme, eventKey, event, swapRedBlue } = this.state
     if (finishedLoading) {
       return (
         <div className="LiveConfigPage">
@@ -106,6 +124,7 @@ export default class LiveConfigPage extends React.Component {
                 </form>
               </React.Fragment>
             }
+            <label>Swap red/blue alliance: <input type="checkbox" checked={swapRedBlue} onChange={this.handleSwapChange}/></label>
           </div>
         </div>
       )

@@ -1,1 +1,2 @@
 export const SET_EVENT_KEY = 'SET_EVENT_KEY'
+export const SET_SWAP_RED_BLUE = 'SET_SWAP_RED_BLUE'
