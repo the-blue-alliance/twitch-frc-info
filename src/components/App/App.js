@@ -13,7 +13,8 @@ export default class App extends React.Component{
         this.state={
             finishedLoading:false,
             theme:'light',
-            isVisible:true
+            isVisible:true,
+            eventKey: undefined,
         }
     }
 
@@ -49,10 +50,8 @@ export default class App extends React.Component{
 
             this.twitch.listen('broadcast',(target,contentType,body)=>{
                 this.twitch.rig.log(`New PubSub message!\n${target}\n${contentType}\n${body}`)
-                // now that you've got a listener, do something with the result...
-
-                // do something...
-
+                const config = JSON.parse(body)
+                this.setState({eventKey: config.eventKey})
             })
 
             this.twitch.onVisibilityChanged((isVisible,_c)=>{
@@ -62,12 +61,17 @@ export default class App extends React.Component{
             this.twitch.onContext((context,delta)=>{
                 this.contextUpdate(context,delta)
             })
+
+            this.twitch.configuration.onChanged(()=>{
+                const config = this.twitch.configuration.broadcaster ? JSON.parse(this.twitch.configuration.broadcaster.content) : ''
+                this.setState({eventKey: config.eventKey})
+            })
         }
     }
 
     componentWillUnmount(){
         if(this.twitch){
-            this.twitch.unlisten('broadcast', ()=>console.log('successfully unlistened'))
+            this.twitch.unlisten('broadcast-config', ()=>console.log('successfully unlistened'))
         }
     }
 
@@ -81,6 +85,7 @@ export default class App extends React.Component{
                         <p>My opaque ID is {this.Authentication.getOpaqueId()}.</p>
                         <div>{this.Authentication.isModerator() ? <p>I am currently a mod, and here's a special mod button <input value='mod button' type='button'/></p>  : 'I am currently not a mod.'}</div>
                         <p>I have {this.Authentication.hasSharedId() ? `shared my ID, and my user_id is ${this.Authentication.getUserId()}` : 'not shared my ID'}.</p>
+                        <p>Event Key: {this.state.eventKey}</p>
                     </div>
                 </div>
             )
