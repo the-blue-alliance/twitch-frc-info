@@ -1,34 +1,57 @@
 import React from 'react'
 import styled from 'styled-components'
-import { fetchEvent } from '../../util/TBAAPI'
+import { fetchEvent, fetchTeamMedia } from '../../util/TBAAPI'
 import { SET_EVENT_KEY } from '../../constants/BroadcastTypes'
-
-const ExpandableButton = styled.div`
-  background-color: #3f51b5;
-  width: ${props => props.open ? '100%' : '48px'};
-  height: ${props => props.open ? '100%' : '48px'};
-  border-radius: ${props => props.open ? 8 : 24}px;
-  margin: 8px;
-  box-shadow: 0px 5px 5px -3px rgba(0,0,0,0.2),0px 8px 10px 1px rgba(0,0,0,0.14),0px 3px 14px 2px rgba(0,0,0,0.12);
-  opacity: 0;
-  transition: all 0.3s cubic-bezier(.06,.89,.23,.98);
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-`
 
 const Container = styled.div`
   position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
+  top: 100px;
+  right: 16px;
+  bottom: 80px;
+  left: 16px;
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-content: space-between;
 
-  &:hover ${ExpandableButton} {
+  /* opacity: 0; */
+  transition: opacity 0.3s cubic-bezier(.06,.89,.23,.98);
+  &:hover {
     opacity: 1;
   }
+`
+
+const RobotImageContainer = styled.div`
+  height: 30%;
+  width: 15%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  background-image: url(${props => props.image});
+  background-position: center;
+  background-size: cover;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0px 5px 5px -3px rgba(0,0,0,0.2), 0px 8px 10px 1px rgba(0,0,0,0.14), 0px 3px 14px 2px rgba(0,0,0,0.12);
+
+  div {
+    width: 100%;
+    text-align: center;
+    color: #fff;
+    background-color: ${props => props.isBlue ? 'rgba(80, 139, 211, 0.9)' : 'rgba(208, 79, 39, 0.9)'};
+  }
+`
+
+const MiddlePanel = styled.div`
+  display: flex;
+  justify-content: center;
+  height: 100%;
+  width: 60%
+  border-radius: 8px;
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.8);
+  box-shadow: 0px 5px 5px -3px rgba(0,0,0,0.2), 0px 8px 10px 1px rgba(0,0,0,0.14), 0px 3px 14px 2px rgba(0,0,0,0.12);
 `
 
 export default class VideoOverlay extends React.Component {
@@ -38,8 +61,24 @@ export default class VideoOverlay extends React.Component {
     this.state = {
       event: null,
       open: false,
+      images: {},
     }
     this.handleOpen = this.handleOpen.bind(this)
+
+    // TEMP update images
+    ;['frc254', 'frc604', 'frc971', 'frc1114', 'frc148', 'frc1678'].forEach(teamKey => {
+      fetchTeamMedia(teamKey, 2018).then(medias => {
+        for (let media of medias) {
+          if (media.preferred) {
+            this.setState(state => {
+              let images = Object.assign({}, this.state.images);
+              images[teamKey] = media.direct_url
+              return {images}
+            })
+          }
+        }
+      })
+    })
   }
 
   handleOpen() {
@@ -78,13 +117,23 @@ export default class VideoOverlay extends React.Component {
   }
 
   render() {
-    const { event, open } = this.state
+    const { event, open, images } = this.state
     if (event || true) {
       return (
         <Container onMouseEnter={this.handleHover} onMouseLeave={this.handleUnHover}>
-          <ExpandableButton onClick={this.handleOpen} open={open}>
-            {open && <h1>Some Title</h1>}
-          </ExpandableButton>
+          {['frc254', 'frc604','frc971'].map(key =>
+            <RobotImageContainer key={key} image={images[key]}>
+              <div>{key.substring(3)}</div>
+            </RobotImageContainer>
+          )}
+          <MiddlePanel>
+            <h3>Match Schedule & Rankings</h3>
+          </MiddlePanel>
+          {['frc1114', 'frc148', 'frc1678'].map(key =>
+            <RobotImageContainer key={key} image={images[key]} isBlue>
+              <div>{key.substring(3)}</div>
+            </RobotImageContainer>
+          )}
         </Container>
       )
     } else {
