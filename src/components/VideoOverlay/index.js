@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { fetchEvent, fetchTeamMedia } from '../../util/TBAAPI'
+import { fetchEvent, fetchTeams, fetchTeamMedia } from '../../util/TBAAPI'
 import { SET_EVENT_KEY } from '../../constants/BroadcastTypes'
 
 const Container = styled.div`
@@ -15,7 +15,7 @@ const Container = styled.div`
   justify-content: space-around;
   align-content: space-between;
 
-  /* opacity: 0; */
+  opacity: 0;
   transition: opacity 0.3s cubic-bezier(.06,.89,.23,.98);
   &:hover {
     opacity: 1;
@@ -33,7 +33,12 @@ const RobotImageContainer = styled.div`
   background-size: cover;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0px 5px 5px -3px rgba(0,0,0,0.2), 0px 8px 10px 1px rgba(0,0,0,0.14), 0px 3px 14px 2px rgba(0,0,0,0.12);
+  box-shadow: 0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12);
+
+  transition: box-shadow 1s cubic-bezier(.06,.89,.23,.98);
+  &:hover {
+    box-shadow: 0px 5px 5px -3px rgba(0,0,0,0.2), 0px 8px 10px 1px rgba(0,0,0,0.14), 0px 3px 14px 2px rgba(0,0,0,0.12);
+  }
 
   div {
     width: 100%;
@@ -45,13 +50,14 @@ const RobotImageContainer = styled.div`
 
 const MiddlePanel = styled.div`
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
   height: 100%;
   width: 60%
   border-radius: 8px;
   color: #fff;
   background-color: rgba(0, 0, 0, 0.8);
-  box-shadow: 0px 5px 5px -3px rgba(0,0,0,0.2), 0px 8px 10px 1px rgba(0,0,0,0.14), 0px 3px 14px 2px rgba(0,0,0,0.12);
+  box-shadow: 0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12);
 `
 
 export default class VideoOverlay extends React.Component {
@@ -60,13 +66,22 @@ export default class VideoOverlay extends React.Component {
     this.twitch = window.Twitch ? window.Twitch.ext : null
     this.state = {
       event: null,
-      open: false,
+      teams: {},
       images: {},
+      hoveredTeamKey: null,
     }
-    this.handleOpen = this.handleOpen.bind(this)
+
+    // TEMP fetcht teams
+    fetchTeams('2018casj').then(teams => {
+      const teamsByKey = {}
+      teams.forEach(team => {
+        teamsByKey[team.key] = team
+      })
+      this.setState({teams: teamsByKey})
+    })
 
     // TEMP update images
-    ;['frc254', 'frc604', 'frc971', 'frc1114', 'frc148', 'frc1678'].forEach(teamKey => {
+    ;['frc254', 'frc604', 'frc971', 'frc973', 'frc846', 'frc8'].forEach(teamKey => {
       fetchTeamMedia(teamKey, 2018).then(medias => {
         for (let media of medias) {
           if (media.preferred) {
@@ -81,8 +96,12 @@ export default class VideoOverlay extends React.Component {
     })
   }
 
-  handleOpen() {
-    this.setState(state => ({open: !state.open}))
+  handleTeamHover(teamKey) {
+    this.setState({hoveredTeamKey: teamKey})
+  }
+
+  handleTeamUnHover(teamKey) {
+    this.setState({hoveredTeamKey: null})
   }
 
   componentDidMount() {
@@ -117,20 +136,39 @@ export default class VideoOverlay extends React.Component {
   }
 
   render() {
-    const { event, open, images } = this.state
-    if (event || true) {
+    const { event, teams, images, hoveredTeamKey } = this.state
+    const team = teams[hoveredTeamKey]
+    if (event) {
       return (
-        <Container onMouseEnter={this.handleHover} onMouseLeave={this.handleUnHover}>
+        <Container>
           {['frc254', 'frc604','frc971'].map(key =>
-            <RobotImageContainer key={key} image={images[key]}>
+            <RobotImageContainer
+              key={key}
+              image={images[key]}
+              onMouseEnter={() => this.handleTeamHover(key)}
+              onMouseLeave={() => this.handleTeamUnHover(key)}
+            >
               <div>{key.substring(3)}</div>
             </RobotImageContainer>
           )}
           <MiddlePanel>
-            <h3>Match Schedule & Rankings</h3>
+            {team ?
+              <React.Fragment>
+                <h3>Team {team.team_number} - {team.nickname}</h3>
+                <p>Rank, standings, etc.</p>
+              </React.Fragment>
+              :
+              <h3>Match Schedule & Rankings</h3>
+            }
           </MiddlePanel>
-          {['frc1114', 'frc148', 'frc1678'].map(key =>
-            <RobotImageContainer key={key} image={images[key]} isBlue>
+          {['frc973', 'frc846', 'frc8'].map(key =>
+            <RobotImageContainer
+              key={key}
+              image={images[key]}
+              isBlue
+              onMouseEnter={() => this.handleTeamHover(key)}
+              onMouseLeave={() => this.handleTeamUnHover(key)}
+            >
               <div>{key.substring(3)}</div>
             </RobotImageContainer>
           )}
