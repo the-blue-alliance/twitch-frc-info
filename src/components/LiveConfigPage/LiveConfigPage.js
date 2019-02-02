@@ -13,11 +13,13 @@ export default class LiveConfigPage extends React.Component {
     this.state = {
       finishedLoading: false,
       theme: 'light',
-      eventKey: undefined,
+      eventKey: '',
+      event: null,
     }
 
-    this.handleChange = this.handleChange.bind(this)
-    this.handleSubmit = this.handleSubmit.bind(this)
+    this.handleEventKeyChange = this.handleEventKeyChange.bind(this)
+    this.handleEventKeySubmit = this.handleEventKeySubmit.bind(this)
+    this.handleEventSubmit = this.handleEventSubmit.bind(this)
   }
 
   contextUpdate(context, delta) {
@@ -28,17 +30,36 @@ export default class LiveConfigPage extends React.Component {
     }
   }
 
-  handleChange(e) {
+  handleEventKeyChange(e) {
     this.setState({eventKey: e.target.value})
   }
 
-  handleSubmit(e) {
-    this.twitch.rig.log("Setting config!")
+  handleEventKeySubmit(e) {
+    e.preventDefault()
+
+    // Confirm event key is correct
+    fetch(
+      `https://www.thebluealliance.com/api/v3/event/${this.state.eventKey}`,
+      {headers: {
+        'X-TBA-Auth-Key': '61bdelekzYp5TY5MueT8OokJsgT1ewwLjywZnTKCAYPCLDeoNnURu1O61DeNy8z3',  // TOOD: replace
+      }},
+    ).then(response => {
+      if (!response.ok) {
+        return null;
+      }
+      return response.json();
+    }).then(event => {
+      this.setState({event});
+    });
+  }
+
+  handleEventSubmit(e) {
     e.preventDefault()
     this.twitch.configuration.set('broadcaster', '1.0', JSON.stringify({
       eventKey: this.state.eventKey,
     }))
     this.twitch.send('broadcast', 'application/json', {'eventKey': this.state.eventKey})
+    this.setState({event: null})
   }
 
   componentDidMount() {
@@ -68,16 +89,25 @@ export default class LiveConfigPage extends React.Component {
   }
 
   render() {
-    if (this.state.finishedLoading) {
+    const { finishedLoading, theme, eventKey, event } = this.state
+    if (finishedLoading) {
       return (
         <div className="LiveConfigPage">
-          <div className={this.state.theme === 'light' ? 'LiveConfigPage-light' : 'LiveConfigPage-dark'} >
-            <form onSubmit={this.handleSubmit}>
+          <div className={theme === 'light' ? 'LiveConfigPage-light' : 'LiveConfigPage-dark'} >
+            <form onSubmit={this.handleEventKeySubmit}>
               <label>
-              Event Key: <input type="text" value={this.state.eventKey} onChange={this.handleChange}/>
+              Event Key: <input type="text" value={eventKey} onChange={this.handleEventKeyChange}/>
               </label>
-              <input type="submit" value="Submit" />
+              <input type="submit" value="Find Event" />
             </form>
+            {event &&
+              <React.Fragment>
+                <div>{event.year} {event.name}</div>
+                <form onSubmit={this.handleEventSubmit}>
+                  <input type="submit" value="Set Event" />
+                </form>
+              </React.Fragment>
+            }
           </div>
         </div>
       )
