@@ -16,7 +16,7 @@ export default class LiveConfigPage extends React.Component {
       finishedLoading: false,
       theme: 'light',
       eventKey: '',
-      event: null,
+      event: undefined,
     }
 
     this.handleEventKeyChange = this.handleEventKeyChange.bind(this)
@@ -54,7 +54,7 @@ export default class LiveConfigPage extends React.Component {
       type: SET_EVENT_KEY,
       eventKey: this.state.eventKey,
     })
-    this.setState({event: null})
+    this.setState({event: undefined})
   }
 
   componentDidMount() {
@@ -95,6 +95,9 @@ export default class LiveConfigPage extends React.Component {
               </label>
               <input type="submit" value="Find Event" />
             </form>
+            {event === null &&
+              <div>Event not found</div>
+            }
             {event &&
               <React.Fragment>
                 <div>{event.year} {event.name}</div>
