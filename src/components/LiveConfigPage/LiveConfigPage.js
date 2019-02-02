@@ -1,5 +1,6 @@
 import React from 'react'
 import Authentication from '../../util/Authentication/Authentication'
+import { fetchEvent } from '../../util/TBAAPI'
 
 import './LiveConfigPage.css'
 
@@ -38,17 +39,7 @@ export default class LiveConfigPage extends React.Component {
     e.preventDefault()
 
     // Confirm event key is correct
-    fetch(
-      `https://www.thebluealliance.com/api/v3/event/${this.state.eventKey}`,
-      {headers: {
-        'X-TBA-Auth-Key': '61bdelekzYp5TY5MueT8OokJsgT1ewwLjywZnTKCAYPCLDeoNnURu1O61DeNy8z3',  // TOOD: replace
-      }},
-    ).then(response => {
-      if (!response.ok) {
-        return null;
-      }
-      return response.json();
-    }).then(event => {
+    fetchEvent(this.state.eventKey).then(event => {
       this.setState({event});
     });
   }
