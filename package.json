@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "build": "webpack --mode production",
+    "build": "webpack --mode production && cd dist && bestzip ../dist.zip *",
     "start": "webpack-dev-server --mode development",
     "host": "webpack-dev-server --mode development --devrig"
   },
@@ -19,6 +19,7 @@
     "babel-loader": "^7.1.4",
     "babel-preset-env": "^1.7.0",
     "babel-preset-react": "^6.24.1",
+    "bestzip": "^2.1.2",
     "css-loader": "^0.28.11",
     "enzyme": "^3.4.1",
     "enzyme-adapter-react-16": "^1.2.0",
