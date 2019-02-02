@@ -1,6 +1,7 @@
 import React from 'react'
 import Authentication from '../../util/Authentication/Authentication'
 import { fetchEvent } from '../../util/TBAAPI'
+import { SET_EVENT_KEY } from '../../constants/BroadcastTypes'
 
 import './LiveConfigPage.css'
 
@@ -49,7 +50,10 @@ export default class LiveConfigPage extends React.Component {
     this.twitch.configuration.set('broadcaster', '1.0', JSON.stringify({
       eventKey: this.state.eventKey,
     }))
-    this.twitch.send('broadcast', 'application/json', {'eventKey': this.state.eventKey})
+    this.twitch.send('broadcast', 'application/json', {
+      type: SET_EVENT_KEY,
+      eventKey: this.state.eventKey,
+    })
     this.setState({event: null})
   }
 

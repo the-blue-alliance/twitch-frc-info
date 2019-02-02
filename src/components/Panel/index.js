@@ -1,5 +1,6 @@
 import React from 'react'
 import { fetchEvent } from '../../util/TBAAPI'
+import { SET_EVENT_KEY } from '../../constants/BroadcastTypes'
 
 export default class Panel extends React.Component {
   constructor(props) {
@@ -25,10 +26,12 @@ export default class Panel extends React.Component {
       // Subscribe to configuration broadcast
       this.twitch.listen('broadcast', (target, contentType, body) => {
         this.twitch.rig.log(`New PubSub message!\n${target}\n${contentType}\n${body}`)
-        const config = JSON.parse(body)
-        fetchEvent(config.eventKey).then(event => {
-          this.setState({event});
-        });
+        const broadcast = JSON.parse(body)
+        if (broadcast.type === SET_EVENT_KEY) {
+          fetchEvent(broadcast.eventKey).then(event => {
+            this.setState({event});
+          });
+        }
       })
     }
   }
