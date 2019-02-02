@@ -1,6 +1,14 @@
 import React from 'react'
+import styled from 'styled-components'
 import { fetchEvent } from '../../util/TBAAPI'
 import { SET_EVENT_KEY } from '../../constants/BroadcastTypes'
+
+const TitleBar = styled.div`
+  display: flex;
+  justify-content: center;
+  padding: 5px;
+  background-color: #eee;
+`
 
 export default class Panel extends React.Component {
   constructor(props) {
@@ -45,7 +53,14 @@ export default class Panel extends React.Component {
   render() {
     const { event } = this.state
     if (event) {
-      return <div>{event.name} ({event.year})</div>
+      return (
+        <div>
+          <TitleBar>
+            {event.name} ({event.year})
+          </TitleBar>
+          <p>TODO!</p>
+        </div>
+      )
     } else {
       return (
         <div>
