@@ -1,8 +1,12 @@
 import React from "react"
 import ReactDOM from "react-dom"
-import App from "./components/App/App"
+import GlobalStyle from './components/GlobalStyle'
+import VideoOverlay from "./components/VideoOverlay"
 
 ReactDOM.render(
-  <App />,
+  <React.Fragment>
+    <GlobalStyle />
+    <VideoOverlay />
+  </React.Fragment>,
   document.getElementById("root")
 )
