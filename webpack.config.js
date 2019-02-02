@@ -11,7 +11,7 @@ module.exports = (_env,argv)=> {
     VideoComponent:{
       path:"./src/VideoComponent.js",
       outputHtml:"video_component.html",
-      build:true
+      build:false
     },
     VideoOverlay:{
       path:"./src/VideoOverlay.js",
