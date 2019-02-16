@@ -5,15 +5,20 @@ import { SET_EVENT_KEY, SET_SWAP_RED_BLUE } from '../../constants/BroadcastTypes
 
 const Container = styled.div`
   position: absolute;
-  top: 100px;
-  right: 16px;
-  bottom: 80px;
-  left: 16px;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+  padding-top: 100px;
+  padding-right: 16px;
+  padding-bottom: 80px;
+  padding-left: 16px;
   display: flex;
   flex-direction: column;
   flex-wrap: ${props => props.swap ? 'wrap-reverse' : 'wrap'};
   justify-content: space-around;
   align-content: space-between;
+  background-color: rgba(0, 0, 0, 0.5);
 
   opacity: 0;
   transition: opacity 0.3s cubic-bezier(.06,.89,.23,.98);
@@ -56,7 +61,7 @@ const MiddlePanel = styled.div`
   width: 60%
   border-radius: 8px;
   color: #fff;
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: rgba(0, 0, 0, 0.5);
   box-shadow: 0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12);
 `
 
