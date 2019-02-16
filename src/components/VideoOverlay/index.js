@@ -21,7 +21,7 @@ const Container = styled.div`
   align-content: space-between;
   background-color: rgba(0, 0, 0, 0.5);
 
-  opacity: 0;
+  opacity: 1;
   transition: opacity 0.3s cubic-bezier(.06,.89,.23,.98);
   &:hover {
     opacity: 1;
@@ -65,6 +65,16 @@ const MiddlePanel = styled.div`
   color: #fff;
   background-color: rgba(0, 0, 0, 0.5);
   box-shadow: 0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12);
+`
+
+const TeamInfoContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`
+
+const TeamTitle = styled.h1`
+  text-align: center;
 `
 
 const PoweredByLink = styled.a`
@@ -173,6 +183,22 @@ export default class VideoOverlay extends React.Component {
   render() {
     const { swapRedBlue, event, teams, images, hoveredTeamKey } = this.state
     const team = teams[hoveredTeamKey]
+    let teamLocation = ''
+    if (team) {
+      if (team.city) {
+          teamLocation += `${team.city}`
+      }
+      if (team.state_prov) {
+          teamLocation += `, ${team.state_prov}`
+      }
+      if (team.country) {
+          teamLocation += `, ${team.country}`
+      }
+      if (teamLocation === '') {
+          teamLocation = null
+      }
+    }
+
     if (event) {
       return (
         <Container swap={swapRedBlue}>
@@ -189,11 +215,14 @@ export default class VideoOverlay extends React.Component {
           <MiddlePanel>
             {team ?
               <React.Fragment>
-                <h3>Team {team.team_number} - {team.nickname}</h3>
+                <TeamInfoContainer>
+                  <TeamTitle>Team {team.team_number} - {team.nickname}</TeamTitle>
+                  {teamLocation && <p>{teamLocation}</p>}
+                </TeamInfoContainer>
                 <p>Rank, standings, etc.</p>
               </React.Fragment>
               :
-              <h3>Match Schedule & Rankings</h3>
+              <h1>Match Schedule & Rankings</h1>
             }
             <PoweredByLink href="https://www.thebluealliance.com" target="_blank">Powered by<InlineSVG src={TBALamp} />The Blue Alliance</PoweredByLink>
           </MiddlePanel>
