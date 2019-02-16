@@ -77,6 +77,15 @@ const TeamTitle = styled.h1`
   text-align: center;
 `
 
+const RobotImageLarge = styled.img`
+  display: block;
+  max-width: 80%;
+  max-height: 50%;
+  width: auto;
+  border-radius: 4px;
+  box-shadow: 0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12);
+`
+
 const PoweredByLink = styled.a`
   margin: 5px;
   padding: 0;
@@ -219,7 +228,8 @@ export default class VideoOverlay extends React.Component {
                   <TeamTitle>Team {team.team_number} - {team.nickname}</TeamTitle>
                   {teamLocation && <p>{teamLocation}</p>}
                 </TeamInfoContainer>
-                <p>Rank, standings, etc.</p>
+                <RobotImageLarge src={images[hoveredTeamKey]} />
+                <p>Rank: 1/34, W-L-T: 5-1-0</p>
               </React.Fragment>
               :
               <h1>Match Schedule & Rankings</h1>
