@@ -2,6 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { fetchEvent, fetchTeams, fetchTeamMedia } from '../../util/TBAAPI'
 import { SET_EVENT_KEY, SET_SWAP_RED_BLUE } from '../../constants/BroadcastTypes'
+import TBALamp from '../../icons/tba_lamp.svg'
 
 const Container = styled.div`
   position: absolute;
@@ -57,12 +58,34 @@ const MiddlePanel = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: space-between;
   height: 100%;
   width: 60%
   border-radius: 8px;
   color: #fff;
   background-color: rgba(0, 0, 0, 0.5);
   box-shadow: 0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12);
+`
+
+const PoweredByLink = styled.a`
+  margin: 5px;
+  padding: 0;
+  align-self: flex-end;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: right;
+  color: white;
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
+`
+
+const InlineSVG = styled.img`
+  margin: -4px 0;
+  height: 18px;
+  width: 18px;
 `
 
 export default class VideoOverlay extends React.Component {
@@ -172,6 +195,7 @@ export default class VideoOverlay extends React.Component {
               :
               <h3>Match Schedule & Rankings</h3>
             }
+            <PoweredByLink href="https://www.thebluealliance.com" target="_blank">Powered by<InlineSVG src={TBALamp} />The Blue Alliance</PoweredByLink>
           </MiddlePanel>
           {['frc973', 'frc846', 'frc8'].map(key =>
             <RobotImageContainer
