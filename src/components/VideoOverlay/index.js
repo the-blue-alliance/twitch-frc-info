@@ -21,7 +21,7 @@ const Container = styled.div`
   align-content: space-between;
   background-color: rgba(0, 0, 0, 0.5);
 
-  opacity: 1;
+  opacity: 0;
   transition: opacity 0.3s cubic-bezier(.06,.89,.23,.98);
   &:hover {
     opacity: 1;
@@ -60,7 +60,7 @@ const MiddlePanel = styled.div`
   align-items: center;
   justify-content: space-between;
   height: 100%;
-  width: 60%
+  width: 65%
   border-radius: 8px;
   color: #fff;
   background-color: rgba(0, 0, 0, 0.5);
