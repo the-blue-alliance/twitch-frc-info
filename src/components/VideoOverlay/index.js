@@ -140,7 +140,7 @@ export default class VideoOverlay extends React.Component {
     })
 
     // TEMP update images
-    ;['frc254', 'frc604', 'frc971', 'frc973', 'frc846', 'frc8'].forEach(teamKey => {
+    ;['frc973', 'frc254', 'frc2367', 'frc846', 'frc971', 'frc4159'].forEach(teamKey => {
       fetchTeamMedia(teamKey, 2018).then(medias => {
         for (let media of medias) {
           if (media.preferred) {
@@ -234,7 +234,7 @@ export default class VideoOverlay extends React.Component {
     if (event) {
       return (
         <Container swap={swapRedBlue}>
-          {['frc254', 'frc604','frc971'].map(key =>
+          {['frc973', 'frc254', 'frc2367'].map(key =>
             <RobotImageContainer
               key={key}
               image={images[key]}
@@ -283,7 +283,7 @@ export default class VideoOverlay extends React.Component {
             }
             <PoweredBy>Powered by<InlineSVG src={TBALamp} />The Blue Alliance</PoweredBy>
           </MiddlePanel>
-          {['frc973', 'frc846', 'frc8'].map(key =>
+          {['frc846', 'frc971', 'frc4159'].map(key =>
             <RobotImageContainer
               key={key}
               image={images[key]}
