@@ -3,7 +3,8 @@ import styled from 'styled-components'
 import { Scrollbars } from 'react-custom-scrollbars';
 import { fetchEvent, fetchTeams, fetchTeamMedia, fetchRankings } from '../../util/TBAAPI'
 import { SET_EVENT_KEY, SET_SWAP_RED_BLUE } from '../../constants/BroadcastTypes'
-import TBALamp from '../../icons/tba_lamp.svg'
+import TBALamp from '../../images/tba_lamp.svg'
+import NoRobotImage from '../../images/no-robot.png'
 
 const Container = styled.div`
   position: absolute;
@@ -35,6 +36,7 @@ const RobotImageContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: flex-end;
+  background-color: #fff;
   background-image: url(${props => props.image});
   background-position: center;
   background-size: cover;
@@ -84,6 +86,7 @@ const RobotImageLarge = styled.img`
   max-height: 50%;
   width: auto;
   border-radius: 4px;
+  background-color: #fff;
   box-shadow: 0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12);
 `
 
@@ -140,7 +143,7 @@ export default class VideoOverlay extends React.Component {
     })
 
     // TEMP update images
-    ;['frc973', 'frc254', 'frc2367', 'frc846', 'frc971', 'frc4159'].forEach(teamKey => {
+    ;['frc973', 'frc254', 'frc2367', 'frc846', 'frc971'].forEach(teamKey => {
       fetchTeamMedia(teamKey, 2018).then(medias => {
         for (let media of medias) {
           if (media.preferred) {
@@ -237,7 +240,7 @@ export default class VideoOverlay extends React.Component {
           {['frc973', 'frc254', 'frc2367'].map(key =>
             <RobotImageContainer
               key={key}
-              image={images[key]}
+              image={images[key] ? images[key] : NoRobotImage}
               onMouseEnter={() => this.handleTeamHover(key)}
               onMouseLeave={() => this.handleTeamUnHover(key)}
             >
@@ -251,7 +254,7 @@ export default class VideoOverlay extends React.Component {
                   <TeamTitle>Team {team.team_number} - {team.nickname}</TeamTitle>
                   {teamLocation && <p>{teamLocation}</p>}
                 </TeamInfoContainer>
-                <RobotImageLarge src={images[hoveredTeamKey]} />
+                <RobotImageLarge src={images[hoveredTeamKey] ? images[hoveredTeamKey] : NoRobotImage} />
                 <p>Rank: {rankingsByTeamKey[hoveredTeamKey].rank}/{rankings.length}, W-L-T: {rankingsByTeamKey[hoveredTeamKey].record.wins}-{rankingsByTeamKey[hoveredTeamKey].record.losses}-{rankingsByTeamKey[hoveredTeamKey].record.ties}</p>
               </React.Fragment>
               :
@@ -286,7 +289,7 @@ export default class VideoOverlay extends React.Component {
           {['frc846', 'frc971', 'frc4159'].map(key =>
             <RobotImageContainer
               key={key}
-              image={images[key]}
+              image={images[key] ? images[key] : NoRobotImage}
               isBlue
               onMouseEnter={() => this.handleTeamHover(key)}
               onMouseLeave={() => this.handleTeamUnHover(key)}
