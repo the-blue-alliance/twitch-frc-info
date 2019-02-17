@@ -34,11 +34,7 @@ const RobotImageContainer = styled.div`
   height: 30%;
   width: 15%;
   display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  background-color: #fff;
-  background-image: url(${props => props.image});
-  background-position: center;
+  flex-direction: column;
   background-size: cover;
   border-radius: 8px;
   overflow: hidden;
@@ -53,8 +49,17 @@ const RobotImageContainer = styled.div`
     width: 100%;
     text-align: center;
     color: #fff;
-    background-color: ${props => props.isBlue ? 'rgba(80, 139, 211, 0.9)' : 'rgba(208, 79, 39, 0.9)'};
+    background-color: ${props => props.isBlue ? '#508bd3' : '#d04f27'};
   }
+`
+
+const RobotImageThumb = styled.div`
+  width: 100%;
+  flex-grow: 1;
+  background-color: #fff;
+  background-image: url(${props => props.image});
+  background-position: center;
+  background-size: cover;
 `
 
 const MiddlePanel = styled.div`
@@ -240,10 +245,10 @@ export default class VideoOverlay extends React.Component {
           {['frc973', 'frc254', 'frc2367'].map(key =>
             <RobotImageContainer
               key={key}
-              image={images[key] ? images[key] : NoRobotImage}
               onMouseEnter={() => this.handleTeamHover(key)}
               onMouseLeave={() => this.handleTeamUnHover(key)}
             >
+              <RobotImageThumb image={images[key] ? images[key] : NoRobotImage} />
               <div>{key.substring(3)}</div>
             </RobotImageContainer>
           )}
@@ -289,11 +294,11 @@ export default class VideoOverlay extends React.Component {
           {['frc846', 'frc971', 'frc4159'].map(key =>
             <RobotImageContainer
               key={key}
-              image={images[key] ? images[key] : NoRobotImage}
               isBlue
               onMouseEnter={() => this.handleTeamHover(key)}
               onMouseLeave={() => this.handleTeamUnHover(key)}
             >
+              <RobotImageThumb image={images[key] ? images[key] : NoRobotImage} />
               <div>{key.substring(3)}</div>
             </RobotImageContainer>
           )}
