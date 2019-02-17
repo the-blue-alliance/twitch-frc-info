@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import { Scrollbars } from 'react-custom-scrollbars';
 import { fetchEvent, fetchTeams, fetchTeamMedia, fetchRankings } from '../../util/TBAAPI'
 import { SET_EVENT_KEY, SET_SWAP_RED_BLUE } from '../../constants/BroadcastTypes'
 import TBALamp from '../../icons/tba_lamp.svg'
@@ -102,16 +103,17 @@ const InlineSVG = styled.img`
   width: 18px;
 `
 
-const RankingTableContainer = styled.div`
-  flex-grow: 1;
-  width: 100%;
-  overflow: auto;
-  display: flex;
-  justify-content: center;
+const ScrollThumb = styled.div`
+  background-color: #fff;
+  width: 8px;
+  border-radius: 4px;
+
 `
 
 const RankingTable = styled.table`
-  text-align: right;
+  width: 80%;
+  margin: 0 auto;
+  text-align: center;
 `
 
 export default class VideoOverlay extends React.Component {
@@ -255,7 +257,9 @@ export default class VideoOverlay extends React.Component {
               :
               <React.Fragment>
                 <h1>Rankings</h1>
-                <RankingTableContainer>
+                <Scrollbars
+                  renderThumbVertical={props => <ScrollThumb {...props}/>}
+                >
                   <RankingTable>
                     <tr>
                       <th>Rank</th>
@@ -274,7 +278,7 @@ export default class VideoOverlay extends React.Component {
                      )
                   })}
                   </RankingTable>
-                </RankingTableContainer>
+                </Scrollbars>
               </React.Fragment>
             }
             <PoweredByLink href="https://www.thebluealliance.com" target="_blank">Powered by<InlineSVG src={TBALamp} />The Blue Alliance</PoweredByLink>
