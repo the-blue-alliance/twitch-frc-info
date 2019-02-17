@@ -88,19 +88,19 @@ const RobotImageLarge = styled.img`
 `
 
 const PoweredByLink = styled.a`
-  margin: 5px;
+  margin: 0.5vw;
   padding: 0;
   align-self: flex-end;
-  font-size: 10px;
+  font-size: 1.5vw;
   display: flex;
   align-items: center;
   justify-content: right;
 `
 
 const InlineSVG = styled.img`
-  margin: -4px 0;
-  height: 18px;
-  width: 18px;
+  margin: -0.5vw 0;
+  height: 2.5vw;
+  width: 2.5vw;
 `
 
 const ScrollThumb = styled.div`

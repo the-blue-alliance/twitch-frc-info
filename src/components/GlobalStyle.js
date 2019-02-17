@@ -5,14 +5,15 @@ export default createGlobalStyle`
   ${styledNormalize}
   body {
     font-family: Helvetica;
+    font-size: 3vw;
   }
   h1 {
-    margin: 8px 0 4px 0;
-    font-size: 24px;
+    margin: 1vw 0 0.5vw 0;
+    font-size: 3.5vw;
     font-weight: 500;
   }
   p {
-    margin: 2px 0 2px 0;
+    margin: 0.25vw 0 0.25vw 0;
   }
   a {
     color: inherit;
