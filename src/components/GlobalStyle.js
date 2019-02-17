@@ -14,4 +14,11 @@ export default createGlobalStyle`
   p {
     margin: 2px 0 2px 0;
   }
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
 `

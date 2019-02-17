@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { fetchEvent, fetchTeams, fetchTeamMedia } from '../../util/TBAAPI'
+import { fetchEvent, fetchTeams, fetchTeamMedia, fetchRankings } from '../../util/TBAAPI'
 import { SET_EVENT_KEY, SET_SWAP_RED_BLUE } from '../../constants/BroadcastTypes'
 import TBALamp from '../../icons/tba_lamp.svg'
 
@@ -94,17 +94,24 @@ const PoweredByLink = styled.a`
   display: flex;
   align-items: center;
   justify-content: right;
-  color: white;
-  text-decoration: none;
-  &:hover {
-    text-decoration: underline;
-  }
 `
 
 const InlineSVG = styled.img`
   margin: -4px 0;
   height: 18px;
   width: 18px;
+`
+
+const RankingTableContainer = styled.div`
+  flex-grow: 1;
+  width: 100%;
+  overflow: auto;
+  display: flex;
+  justify-content: center;
+`
+
+const RankingTable = styled.table`
+  text-align: right;
 `
 
 export default class VideoOverlay extends React.Component {
@@ -117,9 +124,11 @@ export default class VideoOverlay extends React.Component {
       teams: {},
       images: {},
       hoveredTeamKey: null,
+      rankings: [],
+      rankingsByTeamKey: {},
     }
 
-    // TEMP fetcht teams
+    // TEMP fetch teams
     fetchTeams('2018casj').then(teams => {
       const teamsByKey = {}
       teams.forEach(team => {
@@ -140,6 +149,18 @@ export default class VideoOverlay extends React.Component {
             })
           }
         }
+      })
+    })
+
+    // TEMP fetch rankings
+    fetchRankings('2018casj').then(rankings => {
+      const rankingsByTeamKey = {}
+      rankings.rankings.forEach(ranking => {
+        rankingsByTeamKey[ranking.team_key] = ranking
+      })
+      this.setState({
+        rankings: rankings.rankings,
+        rankingsByTeamKey,
       })
     })
   }
@@ -190,7 +211,7 @@ export default class VideoOverlay extends React.Component {
   }
 
   render() {
-    const { swapRedBlue, event, teams, images, hoveredTeamKey } = this.state
+    const { swapRedBlue, event, teams, images, hoveredTeamKey, rankings, rankingsByTeamKey } = this.state
     const team = teams[hoveredTeamKey]
     let teamLocation = ''
     if (team) {
@@ -229,10 +250,32 @@ export default class VideoOverlay extends React.Component {
                   {teamLocation && <p>{teamLocation}</p>}
                 </TeamInfoContainer>
                 <RobotImageLarge src={images[hoveredTeamKey]} />
-                <p>Rank: 1/34, W-L-T: 5-1-0</p>
+                <p>Rank: {rankingsByTeamKey[hoveredTeamKey].rank}/{rankings.length}, W-L-T: {rankingsByTeamKey[hoveredTeamKey].record.wins}-{rankingsByTeamKey[hoveredTeamKey].record.losses}-{rankingsByTeamKey[hoveredTeamKey].record.ties}</p>
               </React.Fragment>
               :
-              <h1>Match Schedule & Rankings</h1>
+              <React.Fragment>
+                <h1>Rankings</h1>
+                <RankingTableContainer>
+                  <RankingTable>
+                    <tr>
+                      <th>Rank</th>
+                      <th>Team</th>
+                      <th>W-L-T</th>
+                      <th># Matches</th>
+                    </tr>
+                  {rankings.map(ranking => {
+                    return (
+                      <tr key={ranking.rank}>
+                        <td>{ranking.rank}</td>
+                        <td><a href={`https://frc-events.firstinspires.org/${event.year}/team/${ranking.team_key.substring(3)}`} target="_blank">{ranking.team_key.substring(3)}</a></td>
+                        <td>{ranking.record.wins}-{ranking.record.losses}-{ranking.record.ties}</td>
+                        <td>{ranking.matches_played}</td>
+                      </tr>
+                     )
+                  })}
+                  </RankingTable>
+                </RankingTableContainer>
+              </React.Fragment>
             }
             <PoweredByLink href="https://www.thebluealliance.com" target="_blank">Powered by<InlineSVG src={TBALamp} />The Blue Alliance</PoweredByLink>
           </MiddlePanel>
