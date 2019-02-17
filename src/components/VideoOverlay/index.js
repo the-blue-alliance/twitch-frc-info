@@ -11,9 +11,9 @@ const Container = styled.div`
   right: 0px;
   bottom: 0px;
   left: 0px;
-  padding-top: 100px;
+  padding-top: 50px;
   padding-right: 16px;
-  padding-bottom: 80px;
+  padding-bottom: 60px;
   padding-left: 16px;
   display: flex;
   flex-direction: column;
@@ -87,7 +87,7 @@ const RobotImageLarge = styled.img`
   box-shadow: 0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12);
 `
 
-const PoweredByLink = styled.a`
+const PoweredBy = styled.div`
   margin: 0.5vw;
   padding: 0;
   align-self: flex-end;
@@ -271,7 +271,7 @@ export default class VideoOverlay extends React.Component {
                     return (
                       <tr key={ranking.rank}>
                         <td>{ranking.rank}</td>
-                        <td><a href={`https://frc-events.firstinspires.org/${event.year}/team/${ranking.team_key.substring(3)}`} target="_blank">{ranking.team_key.substring(3)}</a></td>
+                        <td>{ranking.team_key.substring(3)}</td>
                         <td>{ranking.record.wins}-{ranking.record.losses}-{ranking.record.ties}</td>
                         <td>{ranking.matches_played}</td>
                       </tr>
@@ -281,7 +281,7 @@ export default class VideoOverlay extends React.Component {
                 </Scrollbars>
               </React.Fragment>
             }
-            <PoweredByLink href="https://www.thebluealliance.com" target="_blank">Powered by<InlineSVG src={TBALamp} />The Blue Alliance</PoweredByLink>
+            <PoweredBy>Powered by<InlineSVG src={TBALamp} />The Blue Alliance</PoweredBy>
           </MiddlePanel>
           {['frc973', 'frc846', 'frc8'].map(key =>
             <RobotImageContainer
