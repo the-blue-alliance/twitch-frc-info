@@ -6,6 +6,7 @@ export default createGlobalStyle`
   body {
     font-family: Helvetica;
     font-size: 3vw;
+    user-select: none;
   }
   h1 {
     margin: 1vw 0 0.5vw 0;
