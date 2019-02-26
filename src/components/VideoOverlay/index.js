@@ -5,6 +5,7 @@ import { SET_EVENT_KEY, SET_SWAP_RED_BLUE } from '../../constants/BroadcastTypes
 import TBALamp from '../../images/tba_lamp.svg'
 import NoRobotImage from '../../images/no-robot.png'
 import RobotImageThumbnail from './RobotImageThumbnail'
+import TeamInfo from './TeamInfo'
 import ScrollableRankingTable from './ScrollableRankingTable'
 
 const Container = styled.div`
@@ -51,26 +52,6 @@ const MiddlePanelContent = styled.div`
   justify-content: space-between;
   height: 100%;
   width: 100%;
-`
-
-const TeamInfoContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`
-
-const TeamTitle = styled.h1`
-  text-align: center;
-`
-
-const RobotImageLarge = styled.img`
-  display: block;
-  max-width: 80%;
-  max-height: 50%;
-  width: auto;
-  border-radius: 4px;
-  background-color: #fff;
-  box-shadow: 0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12);
 `
 
 const PoweredBy = styled.div`
@@ -188,21 +169,6 @@ export default class VideoOverlay extends React.Component {
   render() {
     const { swapRedBlue, event, teams, images, hoveredTeamKey, rankings, rankingsByTeamKey } = this.state
     const team = teams[hoveredTeamKey]
-    let teamLocation = ''
-    if (team) {
-      if (team.city) {
-          teamLocation += `${team.city}`
-      }
-      if (team.state_prov) {
-          teamLocation += `, ${team.state_prov}`
-      }
-      if (team.country) {
-          teamLocation += `, ${team.country}`
-      }
-      if (teamLocation === '') {
-          teamLocation = null
-      }
-    }
 
     if (event) {
       return (
@@ -219,14 +185,12 @@ export default class VideoOverlay extends React.Component {
           <MiddlePanel>
             <MiddlePanelContent>
             {team ?
-              <React.Fragment>
-                <TeamInfoContainer>
-                  <TeamTitle>Team {team.team_number} - {team.nickname}</TeamTitle>
-                  {teamLocation && <p>{teamLocation}</p>}
-                </TeamInfoContainer>
-                <RobotImageLarge src={images[hoveredTeamKey] ? images[hoveredTeamKey] : NoRobotImage} />
-                <p>Rank: {rankingsByTeamKey[hoveredTeamKey].rank}/{rankings.length}, W-L-T: {rankingsByTeamKey[hoveredTeamKey].record.wins}-{rankingsByTeamKey[hoveredTeamKey].record.losses}-{rankingsByTeamKey[hoveredTeamKey].record.ties}</p>
-              </React.Fragment>
+              <TeamInfo
+                team={team}
+                image={images[hoveredTeamKey] ? images[hoveredTeamKey] : NoRobotImage}
+                ranking={rankingsByTeamKey[hoveredTeamKey]}
+                totalTeams={rankings.length}
+              />
               :
               <React.Fragment>
                 <h1>Rankings</h1>

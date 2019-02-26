@@ -36,7 +36,7 @@ const RobotImageThumb = styled.div`
 
 export default class RobotImageThumbnail extends React.Component {
   render() {
-    const { image, teamNumber, ...restProps } = this.props
+    const { teamNumber, image, ...restProps } = this.props
 
     return (
       <RobotImageContainer {...restProps}>
