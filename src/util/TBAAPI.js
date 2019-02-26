@@ -1,4 +1,4 @@
-const TBA_AUTH_KEY = '61bdelekzYp5TY5MueT8OokJsgT1ewwLjywZnTKCAYPCLDeoNnURu1O61DeNy8z3'  // TOOD: replace
+const TBA_AUTH_KEY = 'EpSdC0FOdvkX9DjiXnrEVVAKCTsG0jbHWugC5Drwxu0C7HtmMJ0ais7gl91uFgdi'
 
 export const fetchEvent = (eventKey) => {
   return fetch(
