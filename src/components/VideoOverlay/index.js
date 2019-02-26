@@ -1,10 +1,11 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Scrollbars } from 'react-custom-scrollbars';
 import { fetchEvent, fetchTeams, fetchTeamMedia, fetchRankings } from '../../util/TBAAPI'
 import { SET_EVENT_KEY, SET_SWAP_RED_BLUE } from '../../constants/BroadcastTypes'
 import TBALamp from '../../images/tba_lamp.svg'
 import NoRobotImage from '../../images/no-robot.png'
+
+import ScrollableRankingTable from './ScrollableRankingTable'
 
 const Container = styled.div`
   position: absolute;
@@ -118,19 +119,6 @@ const InlineSVG = styled.img`
   margin: -0.5vw 0;
   height: 2.5vw;
   width: 2.5vw;
-`
-
-const ScrollThumb = styled.div`
-  background-color: #fff;
-  width: 8px;
-  border-radius: 4px;
-
-`
-
-const RankingTable = styled.table`
-  width: 80%;
-  margin: 0 auto;
-  text-align: center;
 `
 
 export default class VideoOverlay extends React.Component {
@@ -275,28 +263,7 @@ export default class VideoOverlay extends React.Component {
               :
               <React.Fragment>
                 <h1>Rankings</h1>
-                <Scrollbars
-                  renderThumbVertical={props => <ScrollThumb {...props}/>}
-                >
-                  <RankingTable>
-                    <tr>
-                      <th>Rank</th>
-                      <th>Team</th>
-                      <th>W-L-T</th>
-                      <th># Matches</th>
-                    </tr>
-                  {rankings.map(ranking => {
-                    return (
-                      <tr key={ranking.rank}>
-                        <td>{ranking.rank}</td>
-                        <td>{ranking.team_key.substring(3)}</td>
-                        <td>{ranking.record.wins}-{ranking.record.losses}-{ranking.record.ties}</td>
-                        <td>{ranking.matches_played}</td>
-                      </tr>
-                     )
-                  })}
-                  </RankingTable>
-                </Scrollbars>
+                <ScrollableRankingTable rankings={rankings}/>
               </React.Fragment>
             }
             </MiddlePanelContent>
