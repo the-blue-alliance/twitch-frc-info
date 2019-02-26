@@ -15,7 +15,7 @@ const RankingTable = styled.table`
   text-align: center;
 `
 
-const ErrorMessage = styled.div`
+const Message = styled.div`
   height: 100%;
   display: flex;
   align-items: center;
@@ -39,10 +39,10 @@ export default class ScrollableRankingTable extends React.Component {
     const { hasError } = this.state
 
     if (hasError) {
-      return <ErrorMessage>No Rankings Available</ErrorMessage>
+      return <Message>No Rankings Available</Message>
     }
 
-    if (rankings) {
+    if (rankings.length > 0) {
       return (
         <Scrollbars
           renderThumbVertical={props => <ScrollThumb {...props}/>}
@@ -72,7 +72,7 @@ export default class ScrollableRankingTable extends React.Component {
         </Scrollbars>
       )
     } else {
-      return null
+      return <Message>Fetching Rankings...</Message>
     }
   }
 }

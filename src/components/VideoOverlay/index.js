@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { fetchEvent, fetchTeams, fetchTeamMedia, fetchRankings } from '../../util/TBAAPI'
+import { fetchEvent, fetchTeams, fetchMatches, fetchTeamMedia, fetchRankings } from '../../util/TBAAPI'
 import { SET_EVENT_KEY, SET_SWAP_RED_BLUE } from '../../constants/BroadcastTypes'
 import TBALamp from '../../images/tba_lamp.svg'
 import NoRobotImage from '../../images/no-robot.png'
@@ -38,7 +38,8 @@ const MiddlePanel = styled.div`
   align-items: center;
   justify-content: space-between;
   height: 100%;
-  width: 65%
+  width: 65%;
+  margin: ${props => props.noTeams ? '0 auto' : '0'};
   border-radius: 8px;
   color: #fff;
   background-color: rgba(0, 0, 0, 0.9);
@@ -70,6 +71,14 @@ const InlineSVG = styled.img`
   width: 2.5vw;
 `
 
+const PLAY_ORDER = {
+  qm: 1,
+  ef: 2,
+  qf: 3,
+  sf: 4,
+  f: 5,
+}
+
 export default class VideoOverlay extends React.Component {
   constructor(props) {
     super(props)
@@ -79,23 +88,83 @@ export default class VideoOverlay extends React.Component {
       swapRedBlue: false,
       teams: {},
       images: {},
-      hoveredTeamKey: null,
       rankings: [],
       rankingsByTeamKey: {},
+      redTeamKeys: null,
+      blueTeamKeys: null,
+      hoveredTeamKey: null,
     }
+  }
 
-    // TEMP fetch teams
-    fetchTeams('2018casj').then(teams => {
+  fetchInitialData(eventKey) {
+    fetchEvent(eventKey).then(event => {
+      this.setState({event});
+    });
+
+    fetchTeams(eventKey).then(teams => {
       const teamsByKey = {}
       teams.forEach(team => {
         teamsByKey[team.key] = team
       })
       this.setState({teams: teamsByKey})
     })
+  }
 
-    // TEMP update images
-    ;['frc973', 'frc254', 'frc2367', 'frc846', 'frc971'].forEach(teamKey => {
-      fetchTeamMedia(teamKey, 2018).then(medias => {
+  updateData(eventKey) {
+    const year = eventKey.substring(0, 4)
+
+    fetchMatches(eventKey).then(matches => {
+      matches = matches.sort((a, b) => {
+        const aOrder = PLAY_ORDER[a.comp_level]*100000 + a.match_number*100 + a.set_number
+        const bOrder = PLAY_ORDER[b.comp_level]*100000 + b.match_number*100 + b.set_number
+        if (aOrder < bOrder) {
+          return -1
+        }
+        if (aOrder > bOrder) {
+          return 1
+        }
+        return 0
+      })
+
+      // Find next unplayed match
+      let nextMatch = matches[matches.length-1];  // If no unplayed matches, show last match
+      for (let i=0; i<matches.length; i++) {
+        const match = matches[i];
+        if (match.alliances.red.score === -1 && match.alliances.blue.score === -1) {
+          nextMatch = match
+        }
+      }
+
+      if (nextMatch) {
+        this.setState({
+          redTeamKeys: nextMatch.alliances.red.team_keys,
+          blueTeamKeys: nextMatch.alliances.blue.team_keys,
+        })
+        this.fetchImages(nextMatch.alliances.red.team_keys, year)
+        this.fetchImages(nextMatch.alliances.blue.team_keys, year)
+      } else {
+        this.setState({
+          redTeamKeys: null,
+          blueTeamKeys: null,
+        })
+      }
+    })
+
+    fetchRankings(eventKey).then(rankings => {
+      const rankingsByTeamKey = {}
+      rankings.rankings.forEach(ranking => {
+        rankingsByTeamKey[ranking.team_key] = ranking
+      })
+      this.setState({
+        rankings: rankings.rankings,
+        rankingsByTeamKey,
+      })
+    })
+  }
+
+  fetchImages(teamKeys, year) {
+    teamKeys.forEach(teamKey => {
+      fetchTeamMedia(teamKey, year).then(medias => {
         for (let media of medias) {
           if (media.preferred) {
             this.setState(state => {
@@ -105,18 +174,6 @@ export default class VideoOverlay extends React.Component {
             })
           }
         }
-      })
-    })
-
-    // TEMP fetch rankings
-    fetchRankings('2018casj').then(rankings => {
-      const rankingsByTeamKey = {}
-      rankings.rankings.forEach(ranking => {
-        rankingsByTeamKey[ranking.team_key] = ranking
-      })
-      this.setState({
-        rankings: rankings.rankings,
-        rankingsByTeamKey,
       })
     })
   }
@@ -135,9 +192,7 @@ export default class VideoOverlay extends React.Component {
       this.twitch.configuration.onChanged(() => {
         const config = this.twitch.configuration.broadcaster ? JSON.parse(this.twitch.configuration.broadcaster.content) : null
         if (config) {
-          fetchEvent(config.eventKey).then(event => {
-            this.setState({event});
-          });
+          this.fetchInitialData(config.eventKey);
           this.setState({swapRedBlue: config.swapRedBlue})
         }
       })
@@ -148,9 +203,7 @@ export default class VideoOverlay extends React.Component {
         const broadcast = JSON.parse(body)
         switch (broadcast.type) {
           case SET_EVENT_KEY:
-            fetchEvent(broadcast.eventKey).then(event => {
-              this.setState({event});
-            });
+            this.fetchInitialData(broadcast.eventKey);
             break;
           case SET_SWAP_RED_BLUE:
             this.setState({swapRedBlue: broadcast.swapRedBlue})
@@ -167,13 +220,32 @@ export default class VideoOverlay extends React.Component {
   }
 
   render() {
-    const { swapRedBlue, event, teams, images, hoveredTeamKey, rankings, rankingsByTeamKey } = this.state
+    const {
+      swapRedBlue,
+      event,
+      teams,
+      images,
+      rankings,
+      rankingsByTeamKey,
+      redTeamKeys,
+      blueTeamKeys,
+      hoveredTeamKey,
+     } = this.state
     const team = teams[hoveredTeamKey]
 
     if (event) {
       return (
-        <Container swap={swapRedBlue}>
-          {['frc973', 'frc254', 'frc2367'].map(key =>
+        <Container
+          swap={swapRedBlue}
+          onMouseEnter={() => this.updateData(event.key)}
+          onMouseLeave={() => {
+            this.setState({
+              redTeamKeys: null,
+              blueTeamKeys: null,
+            })
+          }}
+        >
+          {redTeamKeys && redTeamKeys.map(key =>
             <RobotImageThumbnail
               key={key}
               onMouseEnter={() => this.handleTeamHover(key)}
@@ -182,7 +254,7 @@ export default class VideoOverlay extends React.Component {
               teamNumber={key.substring(3)}
             />
           )}
-          <MiddlePanel>
+          <MiddlePanel noTeams={!redTeamKeys}>
             <MiddlePanelContent>
             {team ?
               <TeamInfo
@@ -200,13 +272,14 @@ export default class VideoOverlay extends React.Component {
             </MiddlePanelContent>
             <PoweredBy>Powered by<InlineSVG src={TBALamp} />The Blue Alliance</PoweredBy>
           </MiddlePanel>
-          {['frc846', 'frc971', 'frc4159'].map(key =>
+          {blueTeamKeys && blueTeamKeys.map(key =>
             <RobotImageThumbnail
               key={key}
               onMouseEnter={() => this.handleTeamHover(key)}
               onMouseLeave={() => this.handleTeamUnHover(key)}
               image={images[key] ? images[key] : NoRobotImage}
               teamNumber={key.substring(3)}
+              isBlue
             />
           )}
         </Container>
