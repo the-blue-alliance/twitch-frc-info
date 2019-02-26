@@ -48,22 +48,26 @@ export default class ScrollableRankingTable extends React.Component {
           renderThumbVertical={props => <ScrollThumb {...props}/>}
         >
           <RankingTable>
-            <tr>
-              <th>Rank</th>
-              <th>Team</th>
-              <th>W-L-T</th>
-              <th># Matches</th>
-            </tr>
-          {rankings.map(ranking => {
-            return (
-              <tr key={ranking.rank}>
-                <td>{ranking.rank}</td>
-                <td>{ranking.team_key.substring(3)}</td>
-                <td>{ranking.record.wins}-{ranking.record.losses}-{ranking.record.ties}</td>
-                <td>{ranking.matches_played}</td>
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Team</th>
+                <th>W-L-T</th>
+                <th># Matches</th>
               </tr>
-             )
-          })}
+            </thead>
+            <tbody>
+            {rankings.map(ranking => {
+              return (
+                <tr key={ranking.rank}>
+                  <td>{ranking.rank}</td>
+                  <td>{ranking.team_key.substring(3)}</td>
+                  <td>{ranking.record.wins}-{ranking.record.losses}-{ranking.record.ties}</td>
+                  <td>{ranking.matches_played}</td>
+                </tr>
+               )
+            })}
+            </tbody>
           </RankingTable>
         </Scrollbars>
       )
