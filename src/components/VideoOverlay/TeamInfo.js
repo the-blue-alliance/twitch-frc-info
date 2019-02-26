@@ -16,7 +16,7 @@ const TeamTitle = styled.h1`
 const RobotImageLarge = styled.img`
   display: block;
   max-width: 80%;
-  max-height: 50%;
+  max-height: 60%;
   width: auto;
   border-radius: 4px;
   background-color: #fff;
