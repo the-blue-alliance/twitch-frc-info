@@ -4,7 +4,7 @@ import { fetchEvent, fetchTeams, fetchTeamMedia, fetchRankings } from '../../uti
 import { SET_EVENT_KEY, SET_SWAP_RED_BLUE } from '../../constants/BroadcastTypes'
 import TBALamp from '../../images/tba_lamp.svg'
 import NoRobotImage from '../../images/no-robot.png'
-
+import RobotImageThumbnail from './RobotImageThumbnail'
 import ScrollableRankingTable from './ScrollableRankingTable'
 
 const Container = styled.div`
@@ -29,38 +29,6 @@ const Container = styled.div`
   &:hover {
     opacity: 1;
   }
-`
-
-const RobotImageContainer = styled.div`
-  height: 30%;
-  width: 15%;
-  display: flex;
-  flex-direction: column;
-  background-size: cover;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12);
-
-  transition: box-shadow 1s cubic-bezier(.06,.89,.23,.98);
-  &:hover {
-    box-shadow: 0px 5px 5px -3px rgba(0,0,0,0.2), 0px 8px 10px 1px rgba(0,0,0,0.14), 0px 3px 14px 2px rgba(0,0,0,0.12);
-  }
-
-  div {
-    width: 100%;
-    text-align: center;
-    color: #fff;
-    background-color: ${props => props.isBlue ? '#508bd3' : '#d04f27'};
-  }
-`
-
-const RobotImageThumb = styled.div`
-  width: 100%;
-  flex-grow: 1;
-  background-color: #fff;
-  background-image: url(${props => props.image});
-  background-position: center;
-  background-size: cover;
 `
 
 const MiddlePanel = styled.div`
@@ -240,14 +208,13 @@ export default class VideoOverlay extends React.Component {
       return (
         <Container swap={swapRedBlue}>
           {['frc973', 'frc254', 'frc2367'].map(key =>
-            <RobotImageContainer
+            <RobotImageThumbnail
               key={key}
               onMouseEnter={() => this.handleTeamHover(key)}
               onMouseLeave={() => this.handleTeamUnHover(key)}
-            >
-              <RobotImageThumb image={images[key] ? images[key] : NoRobotImage} />
-              <div>{key.substring(3)}</div>
-            </RobotImageContainer>
+              image={images[key] ? images[key] : NoRobotImage}
+              teamNumber={key.substring(3)}
+            />
           )}
           <MiddlePanel>
             <MiddlePanelContent>
@@ -270,15 +237,13 @@ export default class VideoOverlay extends React.Component {
             <PoweredBy>Powered by<InlineSVG src={TBALamp} />The Blue Alliance</PoweredBy>
           </MiddlePanel>
           {['frc846', 'frc971', 'frc4159'].map(key =>
-            <RobotImageContainer
+            <RobotImageThumbnail
               key={key}
-              isBlue
               onMouseEnter={() => this.handleTeamHover(key)}
               onMouseLeave={() => this.handleTeamUnHover(key)}
-            >
-              <RobotImageThumb image={images[key] ? images[key] : NoRobotImage} />
-              <div>{key.substring(3)}</div>
-            </RobotImageContainer>
+              image={images[key] ? images[key] : NoRobotImage}
+              teamNumber={key.substring(3)}
+            />
           )}
         </Container>
       )
