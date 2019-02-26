@@ -75,6 +75,15 @@ const MiddlePanel = styled.div`
   box-shadow: 0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12);
 `
 
+const MiddlePanelContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  width: 100%;
+`
+
 const TeamInfoContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -253,6 +262,7 @@ export default class VideoOverlay extends React.Component {
             </RobotImageContainer>
           )}
           <MiddlePanel>
+            <MiddlePanelContent>
             {team ?
               <React.Fragment>
                 <TeamInfoContainer>
@@ -289,6 +299,7 @@ export default class VideoOverlay extends React.Component {
                 </Scrollbars>
               </React.Fragment>
             }
+            </MiddlePanelContent>
             <PoweredBy>Powered by<InlineSVG src={TBALamp} />The Blue Alliance</PoweredBy>
           </MiddlePanel>
           {['frc846', 'frc971', 'frc4159'].map(key =>
