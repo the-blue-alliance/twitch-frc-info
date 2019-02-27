@@ -81,7 +81,7 @@ export default class TeamInfo extends React.Component {
           {teamLocation && <p>{teamLocation}</p>}
         </TeamInfoContainer>
         <RobotImageLarge src={image} />
-        <p>Rank: {ranking.rank}/{totalTeams}, W-L-T: {ranking.record.wins}-{ranking.record.losses}-{ranking.record.ties}</p>
+        {ranking ? <p>Rank: {ranking.rank}/{totalTeams}, W-L-T: {ranking.record.wins}-{ranking.record.losses}-{ranking.record.ties}</p> : <p></p>}
       </React.Fragment>
     )
   }

@@ -150,14 +150,21 @@ export default class VideoOverlay extends React.Component {
     })
 
     fetchRankings(eventKey).then(rankings => {
-      const rankingsByTeamKey = {}
-      rankings.rankings.forEach(ranking => {
-        rankingsByTeamKey[ranking.team_key] = ranking
-      })
-      this.setState({
-        rankings: rankings.rankings,
-        rankingsByTeamKey,
-      })
+      if (rankings) {
+        const rankingsByTeamKey = {}
+        rankings.rankings.forEach(ranking => {
+          rankingsByTeamKey[ranking.team_key] = ranking
+        })
+        this.setState({
+          rankings: rankings.rankings,
+          rankingsByTeamKey,
+        })
+      } else {
+        this.setState({
+          rankings: null,
+          rankingsByTeamKey: {},
+        })
+      }
     })
   }
 
@@ -278,7 +285,7 @@ export default class VideoOverlay extends React.Component {
                 team={team}
                 image={images[hoveredTeamKey] ? images[hoveredTeamKey] : NoRobotImage}
                 ranking={rankingsByTeamKey[hoveredTeamKey]}
-                totalTeams={rankings.length}
+                totalTeams={rankings ? rankings.length : null}
               />
               :
               <React.Fragment>
