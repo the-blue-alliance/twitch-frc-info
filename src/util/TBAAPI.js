@@ -1,4 +1,4 @@
-const TBA_AUTH_KEY = 'EpSdC0FOdvkX9DjiXnrEVVAKCTsG0jbHWugC5Drwxu0C7HtmMJ0ais7gl91uFgdi'
+const TBA_AUTH_KEY = process.env.TBA_AUTH_KEY
 
 export const fetchEvent = (eventKey) => {
   return fetch(
