@@ -27,9 +27,6 @@ const Container = styled.div`
 
   opacity: 0;
   transition: opacity 0.3s cubic-bezier(.06,.89,.23,.98);
-  &:hover {
-    opacity: 1;
-  }
 `
 
 const MiddlePanel = styled.div`
@@ -92,6 +89,7 @@ export default class VideoOverlay extends React.Component {
       rankingsByTeamKey: {},
       redTeamKeys: null,
       blueTeamKeys: null,
+      hovered: false,
       hoveredTeamKey: null,
     }
   }
@@ -187,6 +185,14 @@ export default class VideoOverlay extends React.Component {
     this.setState({hoveredTeamKey: null})
   }
 
+  handleMouseOver() {
+    this.setState({hovered: true})
+    if (this.mouseOverTimeout) {
+      clearTimeout(this.mouseOverTimeout)
+    }
+    this.mouseOverTimeout = setTimeout(() => this.setState({hovered: false}), 2000)
+  }
+
   componentDidMount() {
     if (this.twitch) {
       // Subscribe to configuration
@@ -218,6 +224,9 @@ export default class VideoOverlay extends React.Component {
     if (this.twitch){
       this.twitch.unlisten('broadcast')
     }
+    if (this.mouseOverTimeout) {
+      clearTimeout(this.mouseOverTimeout)
+    }
   }
 
   render() {
@@ -230,6 +239,7 @@ export default class VideoOverlay extends React.Component {
       rankingsByTeamKey,
       redTeamKeys,
       blueTeamKeys,
+      hovered,
       hoveredTeamKey,
      } = this.state
     const team = teams[hoveredTeamKey]
@@ -238,13 +248,19 @@ export default class VideoOverlay extends React.Component {
       return (
         <Container
           swap={swapRedBlue}
-          onMouseEnter={() => this.updateData(event.key)}
+          onMouseEnter={() => {
+            this.updateData(event.key)
+            this.setState({hovered: true})
+          }}
           onMouseLeave={() => {
+            this.setState({hovered: false})
             this.setState({
               redTeamKeys: null,
               blueTeamKeys: null,
             })
           }}
+          onMouseOver={this.handleMouseOver.bind(this)}
+          style={{opacity: hovered ? 1 : 0}}
         >
           {redTeamKeys && redTeamKeys.map(key =>
             <RobotImageThumbnail
