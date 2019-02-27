@@ -22,7 +22,7 @@ const Container = styled.div`
   flex-direction: column;
   flex-wrap: ${props => props.swap ? 'wrap-reverse' : 'wrap'};
   justify-content: space-around;
-  align-content: space-between;
+  align-items: center;
   background-color: rgba(0, 0, 0, 0.5);
 
   opacity: 0;
@@ -36,7 +36,6 @@ const MiddlePanel = styled.div`
   justify-content: space-between;
   height: 100%;
   width: 65%;
-  margin: ${props => props.noTeams ? '0 auto' : '0'};
   border-radius: 8px;
   color: #fff;
   background-color: rgba(0, 0, 0, 0.9);
@@ -278,7 +277,7 @@ export default class VideoOverlay extends React.Component {
               teamNumber={key.substring(3)}
             />
           )}
-          <MiddlePanel noTeams={!redTeamKeys}>
+          <MiddlePanel>
             <MiddlePanelContent>
             {team ?
               <TeamInfo
