@@ -123,14 +123,18 @@ export default class VideoOverlay extends React.Component {
         return 0
       })
 
-      // Find next unplayed match
-      let nextMatch = matches[matches.length-1];  // If no unplayed matches, show last match
+      // Find next unplayed match after the last played match
+      let nextMatch = null
       for (let i=0; i<matches.length; i++) {
         const match = matches[i];
-        if (match.alliances.red.score === -1 && match.alliances.blue.score === -1) {
+        if (!nextMatch && match.alliances.red.score === -1 && match.alliances.blue.score === -1) {
           nextMatch = match
-          break;
+        } else {
+          nextMatch = null
         }
+      }
+      if (!nextMatch) { // If no unplayed matches, show last match
+        nextMatch = matches[matches.length-1]
       }
 
       if (nextMatch) {
