@@ -13,6 +13,11 @@ export default createGlobalStyle`
     font-size: 3.5vw;
     font-weight: 500;
   }
+  h2 {
+    margin: 1vw 0 0.5vw 0;
+    font-size: 3vw;
+    font-weight: 500;
+  }
   p {
     margin: 0.25vw 0 0.25vw 0;
   }
@@ -22,5 +27,8 @@ export default createGlobalStyle`
   }
   a:hover {
     text-decoration: underline;
+  }
+  th {
+    font-weight: 300;
   }
 `

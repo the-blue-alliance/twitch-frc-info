@@ -42,6 +42,10 @@ const MiddlePanel = styled.div`
   box-shadow: 0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12);
 `
 
+const CurrentMatch = styled.h1`
+  border-bottom: 1px solid #fff;
+`
+
 const MiddlePanelContent = styled.div`
   display: flex;
   flex-direction: column;
@@ -75,6 +79,14 @@ const PLAY_ORDER = {
   f: 5,
 }
 
+const MATCH_LEVEL_NAMES = {
+  qm: 'Qualification',
+  ef: 'Octo-final',
+  qf: 'Quarterfinal',
+  sf: 'Semfinal',
+  f: 'Finals',
+}
+
 export default class VideoOverlay extends React.Component {
   constructor(props) {
     super(props)
@@ -86,6 +98,7 @@ export default class VideoOverlay extends React.Component {
       images: {},
       rankings: [],
       rankingsByTeamKey: {},
+      matchName: null,
       redTeamKeys: null,
       blueTeamKeys: null,
       hovered: false,
@@ -138,7 +151,14 @@ export default class VideoOverlay extends React.Component {
       }
 
       if (nextMatch) {
+        let matchName = MATCH_LEVEL_NAMES[nextMatch.comp_level]
+        if (nextMatch.comp_level === 'qm' || nextMatch.comp_level === 'f') {
+          matchName += ` ${nextMatch.match_number}`
+        } else {
+          matchName += ` ${nextMatch.set_number} - ${nextMatch.match_number}`
+        }
         this.setState({
+          matchName,
           redTeamKeys: nextMatch.alliances.red.team_keys,
           blueTeamKeys: nextMatch.alliances.blue.team_keys,
         })
@@ -146,6 +166,7 @@ export default class VideoOverlay extends React.Component {
         this.fetchImages(nextMatch.alliances.blue.team_keys, year)
       } else {
         this.setState({
+          matchName: null,
           redTeamKeys: null,
           blueTeamKeys: null,
         })
@@ -247,6 +268,7 @@ export default class VideoOverlay extends React.Component {
       images,
       rankings,
       rankingsByTeamKey,
+      matchName,
       redTeamKeys,
       blueTeamKeys,
       hovered,
@@ -282,6 +304,7 @@ export default class VideoOverlay extends React.Component {
             />
           )}
           <MiddlePanel>
+            {matchName && <CurrentMatch>Current Match: {matchName}</CurrentMatch>}
             <MiddlePanelContent>
             {team ?
               <TeamInfo
@@ -292,7 +315,7 @@ export default class VideoOverlay extends React.Component {
               />
               :
               <React.Fragment>
-                <h1>Rankings</h1>
+                <h2>Rankings</h2>
                 <ScrollableRankingTable rankings={rankings}/>
               </React.Fragment>
             }

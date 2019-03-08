@@ -9,7 +9,7 @@ const TeamInfoContainer = styled.div`
   align-items: center;
 `
 
-const TeamTitle = styled.h1`
+const TeamTitle = styled.h2`
   text-align: center;
 `
 
