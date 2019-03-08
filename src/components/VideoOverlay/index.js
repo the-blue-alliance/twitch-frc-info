@@ -140,8 +140,10 @@ export default class VideoOverlay extends React.Component {
       let nextMatch = null
       for (let i=0; i<matches.length; i++) {
         const match = matches[i];
-        if (!nextMatch && match.alliances.red.score === -1 && match.alliances.blue.score === -1) {
-          nextMatch = match
+        if (match.alliances.red.score === -1 && match.alliances.blue.score === -1) {
+          if (!nextMatch) {
+            nextMatch = match
+          }
         } else {
           nextMatch = null
         }
