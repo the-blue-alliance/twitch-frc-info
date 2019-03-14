@@ -1,7 +1,7 @@
 import React from 'react'
 import Authentication from '../../util/Authentication/Authentication'
 import { fetchEvent } from '../../util/TBAAPI'
-import { SET_EVENT_KEY, SET_SWAP_RED_BLUE } from '../../constants/BroadcastTypes'
+import { SET_EVENT_KEY, SET_SWAP_RED_BLUE, SET_FRC_EVENTS_LINK } from '../../constants/BroadcastTypes'
 
 import './LiveConfigPage.css'
 
@@ -18,12 +18,14 @@ export default class LiveConfigPage extends React.Component {
       eventKey: '',
       event: undefined,
       swapRedBlue: false,
+      showFRCEventsLink: false,
     }
 
     this.handleEventKeyChange = this.handleEventKeyChange.bind(this)
     this.handleEventKeySubmit = this.handleEventKeySubmit.bind(this)
     this.handleEventSubmit = this.handleEventSubmit.bind(this)
     this.handleSwapChange = this.handleSwapChange.bind(this)
+    this.handleLinkChange = this.handleLinkChange.bind(this)
   }
 
   contextUpdate(context, delta) {
@@ -52,6 +54,7 @@ export default class LiveConfigPage extends React.Component {
     this.twitch.configuration.set('broadcaster', '1.0', JSON.stringify({
       eventKey: this.state.eventKey,
       swapRedBlue: this.state.swapRedBlue,
+      showFRCEventsLink: this.state.showFRCEventsLink,
     }))
     this.twitch.send('broadcast', 'application/json', {
       type: SET_EVENT_KEY,
@@ -64,12 +67,26 @@ export default class LiveConfigPage extends React.Component {
     this.twitch.configuration.set('broadcaster', '1.0', JSON.stringify({
       eventKey: this.state.eventKey,
       swapRedBlue: !this.state.swapRedBlue,
+      showFRCEventsLink: this.state.showFRCEventsLink,
     }))
     this.twitch.send('broadcast', 'application/json', {
       type: SET_SWAP_RED_BLUE,
       swapRedBlue: !this.state.swapRedBlue,
     })
     this.setState(state => ({swapRedBlue: !this.state.swapRedBlue}))
+  }
+
+  handleLinkChange() {
+    this.twitch.configuration.set('broadcaster', '1.0', JSON.stringify({
+      eventKey: this.state.eventKey,
+      swapRedBlue: this.state.swapRedBlue,
+      showFRCEventsLink: !this.state.showFRCEventsLink,
+    }))
+    this.twitch.send('broadcast', 'application/json', {
+      type: SET_FRC_EVENTS_LINK,
+      showFRCEventsLink: !this.state.showFRCEventsLink,
+    })
+    this.setState(state => ({showFRCEventsLink: !this.state.showFRCEventsLink}))
   }
 
   componentDidMount() {
@@ -95,6 +112,7 @@ export default class LiveConfigPage extends React.Component {
           this.setState({
             eventKey: config.eventKey,
             swapRedBlue: config.swapRedBlue,
+            showFRCEventsLink: config.showFRCEventsLink,
           })
         }
       })
@@ -102,7 +120,7 @@ export default class LiveConfigPage extends React.Component {
   }
 
   render() {
-    const { finishedLoading, theme, eventKey, event, swapRedBlue } = this.state
+    const { finishedLoading, theme, eventKey, event, swapRedBlue, showFRCEventsLink } = this.state
     if (finishedLoading) {
       return (
         <div className="LiveConfigPage">
@@ -125,6 +143,8 @@ export default class LiveConfigPage extends React.Component {
               </React.Fragment>
             }
             <label>Swap red/blue alliance: <input type="checkbox" checked={swapRedBlue} onChange={this.handleSwapChange}/></label>
+            <br />
+            <label>FRC Events Link (defaults to TBA): <input type="checkbox" checked={showFRCEventsLink} onChange={this.handleLinkChange}/></label>
           </div>
         </div>
       )

@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { fetchEvent, fetchTeams, fetchMatches, fetchTeamMedia, fetchRankings } from '../../util/TBAAPI'
-import { SET_EVENT_KEY, SET_SWAP_RED_BLUE } from '../../constants/BroadcastTypes'
+import { SET_EVENT_KEY, SET_SWAP_RED_BLUE, SET_FRC_EVENTS_LINK } from '../../constants/BroadcastTypes'
 import TBALamp from '../../images/tba_lamp.svg'
 import NoRobotImage from '../../images/no-robot.png'
 import RobotImageThumbnail from './RobotImageThumbnail'
@@ -55,14 +55,26 @@ const MiddlePanelContent = styled.div`
   width: 100%;
 `
 
-const PoweredBy = styled.div`
+const BottomInfo = styled.div`
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+`
+
+const FullResults = styled.div`
   margin: 0.5vw;
   padding: 0;
-  align-self: flex-end;
   font-size: 1.5vw;
   display: flex;
   align-items: center;
-  justify-content: right;
+`
+
+const PoweredBy = styled.div`
+  margin: 0.5vw;
+  padding: 0;
+  font-size: 1.5vw;
+  display: flex;
+  align-items: center;
 `
 
 const InlineSVG = styled.img`
@@ -94,6 +106,7 @@ export default class VideoOverlay extends React.Component {
     this.state = {
       event: null,
       swapRedBlue: false,
+      showFRCEventsLink: false,
       teams: {},
       images: {},
       rankings: [],
@@ -234,6 +247,7 @@ export default class VideoOverlay extends React.Component {
         if (config) {
           this.fetchInitialData(config.eventKey);
           this.setState({swapRedBlue: config.swapRedBlue})
+          this.setState({showFRCEventsLink: config.showFRCEventsLink})
         }
       })
 
@@ -247,6 +261,9 @@ export default class VideoOverlay extends React.Component {
             break;
           case SET_SWAP_RED_BLUE:
             this.setState({swapRedBlue: broadcast.swapRedBlue})
+            break;
+          case SET_FRC_EVENTS_LINK:
+            this.setState({showFRCEventsLink: broadcast.showFRCEventsLink})
             break;
         }
       })
@@ -265,6 +282,7 @@ export default class VideoOverlay extends React.Component {
   render() {
     const {
       swapRedBlue,
+      showFRCEventsLink,
       event,
       teams,
       images,
@@ -322,7 +340,10 @@ export default class VideoOverlay extends React.Component {
               </React.Fragment>
             }
             </MiddlePanelContent>
-            <PoweredBy>Powered by<InlineSVG src={TBALamp} />The Blue Alliance</PoweredBy>
+            <BottomInfo>
+              <FullResults>Full Results: {showFRCEventsLink ? 'www.frc.events' : 'www.thebluealliance.com'}</FullResults>
+              <PoweredBy>Powered by<InlineSVG src={TBALamp} />The Blue Alliance</PoweredBy>
+            </BottomInfo>
           </MiddlePanel>
           {blueTeamKeys && blueTeamKeys.map(key =>
             <RobotImageThumbnail
