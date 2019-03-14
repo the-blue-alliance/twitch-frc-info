@@ -29,6 +29,15 @@ const Container = styled.div`
   transition: opacity 0.3s cubic-bezier(.06,.89,.23,.98);
 `
 
+const HoverArea = styled.div`
+  position: absolute;
+  top: 25%;
+  right: 10%;
+  bottom: 25%;
+  left: 10%;
+  z-index: ${props => props.hovered || props.hoverTimedOut ? -1 : 1000};
+`
+
 const MiddlePanel = styled.div`
   display: flex;
   flex-direction: column;
@@ -115,6 +124,7 @@ export default class VideoOverlay extends React.Component {
       redTeamKeys: null,
       blueTeamKeys: null,
       hovered: false,
+      hoverTimedOut: false,
       hoveredTeamKey: null,
     }
   }
@@ -232,11 +242,13 @@ export default class VideoOverlay extends React.Component {
   }
 
   handleMouseOver() {
-    this.setState({hovered: true})
     if (this.mouseOverTimeout) {
       clearTimeout(this.mouseOverTimeout)
     }
-    this.mouseOverTimeout = setTimeout(() => this.setState({hovered: false}), 2000)
+    this.mouseOverTimeout = setTimeout(() => {
+      this.setState({hovered: false, hoverTimedOut: true})
+    }, 2000)
+    this.setState({hoverTimedOut: false})
   }
 
   componentDidMount() {
@@ -292,6 +304,7 @@ export default class VideoOverlay extends React.Component {
       redTeamKeys,
       blueTeamKeys,
       hovered,
+      hoverTimedOut,
       hoveredTeamKey,
      } = this.state
     const team = teams[hoveredTeamKey]
@@ -300,10 +313,6 @@ export default class VideoOverlay extends React.Component {
       return (
         <Container
           swap={swapRedBlue}
-          onMouseEnter={() => {
-            this.updateData(event.key)
-            this.setState({hovered: true})
-          }}
           onMouseLeave={() => {
             this.setState({hovered: false})
             this.setState({
@@ -314,6 +323,14 @@ export default class VideoOverlay extends React.Component {
           onMouseOver={this.handleMouseOver.bind(this)}
           style={{opacity: hovered ? 1 : 0}}
         >
+          <HoverArea
+            hovered={hovered}
+            hoverTimedOut={hoverTimedOut}
+            onMouseEnter={() => {
+              this.updateData(event.key)
+              this.setState({hovered: true})
+            }}
+          />
           {redTeamKeys && redTeamKeys.map(key =>
             <RobotImageThumbnail
               key={key}
