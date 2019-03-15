@@ -55,6 +55,12 @@ const CurrentMatch = styled.h1`
   border-bottom: 1px solid #fff;
 `
 
+const EventName = styled.div`
+  text-align: center;
+  font-size: 2vw;
+  margin-bottom: 0.5vw;
+`
+
 const MiddlePanelContent = styled.div`
   display: flex;
   flex-direction: column;
@@ -62,6 +68,8 @@ const MiddlePanelContent = styled.div`
   justify-content: space-between;
   height: 100%;
   width: 100%;
+  border-top: 1px solid #fff;
+  border-bottom: 1px solid #fff;
 `
 
 const BottomInfo = styled.div`
@@ -342,6 +350,7 @@ export default class VideoOverlay extends React.Component {
           )}
           <MiddlePanel>
             {matchName && <CurrentMatch>Current Match: {matchName}</CurrentMatch>}
+            <EventName>{event.name}</EventName>
             <MiddlePanelContent>
             {team ?
               <TeamInfo
