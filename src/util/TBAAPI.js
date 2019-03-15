@@ -69,3 +69,17 @@ export const fetchRankings = (eventKey) => {
     return response.json();
   })
 }
+
+export const fetchAlliances = (eventKey) => {
+  return fetch(
+    `https://www.thebluealliance.com/api/v3/event/${eventKey}/alliances`,
+    {headers: {
+      'X-TBA-Auth-Key': TBA_AUTH_KEY,
+    }},
+  ).then(response => {
+    if (!response.ok) {
+      return null;
+    }
+    return response.json();
+  })
+}

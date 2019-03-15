@@ -1,12 +1,13 @@
 import React from 'react'
 import styled from 'styled-components'
-import { fetchEvent, fetchTeams, fetchMatches, fetchTeamMedia, fetchRankings } from '../../util/TBAAPI'
+import { fetchEvent, fetchTeams, fetchMatches, fetchTeamMedia, fetchRankings, fetchAlliances } from '../../util/TBAAPI'
 import { SET_EVENT_KEY, SET_SWAP_RED_BLUE, SET_FRC_EVENTS_LINK } from '../../constants/BroadcastTypes'
 import TBALamp from '../../images/tba_lamp.svg'
 import NoRobotImage from '../../images/no-robot.png'
 import RobotImageThumbnail from './RobotImageThumbnail'
 import TeamInfo from './TeamInfo'
 import ScrollableRankingTable from './ScrollableRankingTable'
+import PlayoffBracket from './PlayoffBracket'
 
 const Container = styled.div`
   position: absolute;
@@ -126,8 +127,10 @@ export default class VideoOverlay extends React.Component {
       showFRCEventsLink: false,
       teams: {},
       images: {},
+      alliances: null,
       rankings: [],
       rankingsByTeamKey: {},
+      playoffMatches: [],
       matchName: null,
       redTeamKeys: null,
       blueTeamKeys: null,
@@ -155,6 +158,7 @@ export default class VideoOverlay extends React.Component {
     const year = eventKey.substring(0, 4)
 
     fetchMatches(eventKey).then(matches => {
+      let playoffMatches = []
       matches = matches.sort((a, b) => {
         const aOrder = PLAY_ORDER[a.comp_level]*100000 + a.match_number*100 + a.set_number
         const bOrder = PLAY_ORDER[b.comp_level]*100000 + b.match_number*100 + b.set_number
@@ -178,6 +182,10 @@ export default class VideoOverlay extends React.Component {
         } else {
           nextMatch = null
         }
+
+        if (match.comp_level !== 'qm') {
+          playoffMatches.push(match)
+        }
       }
       if (!nextMatch) { // If no unplayed matches, show last match
         nextMatch = matches[matches.length-1]
@@ -191,6 +199,7 @@ export default class VideoOverlay extends React.Component {
           matchName += ` ${nextMatch.set_number} - ${nextMatch.match_number}`
         }
         this.setState({
+          playoffMatches,
           matchName,
           redTeamKeys: nextMatch.alliances.red.team_keys,
           blueTeamKeys: nextMatch.alliances.blue.team_keys,
@@ -199,6 +208,7 @@ export default class VideoOverlay extends React.Component {
         this.fetchImages(nextMatch.alliances.blue.team_keys, year)
       } else {
         this.setState({
+          playoffMatches: [],
           matchName: null,
           redTeamKeys: null,
           blueTeamKeys: null,
@@ -221,6 +231,14 @@ export default class VideoOverlay extends React.Component {
           rankings: null,
           rankingsByTeamKey: {},
         })
+      }
+    })
+
+    fetchAlliances(eventKey).then(alliances => {
+      if (alliances) {
+        this.setState({alliances})
+      } else {
+        this.setState({alliances: null})
       }
     })
   }
@@ -306,8 +324,10 @@ export default class VideoOverlay extends React.Component {
       event,
       teams,
       images,
+      alliances,
       rankings,
       rankingsByTeamKey,
+      playoffMatches,
       matchName,
       redTeamKeys,
       blueTeamKeys,
@@ -361,8 +381,17 @@ export default class VideoOverlay extends React.Component {
               />
               :
               <React.Fragment>
-                <h2>Rankings</h2>
-                <ScrollableRankingTable rankings={rankings}/>
+                {playoffMatches.length > 0 ?
+                  <React.Fragment>
+                    <h2>Playoff Bracket</h2>
+                    <PlayoffBracket alliances={alliances} matches={playoffMatches} playoff_type={event.playoff_type} />
+                  </React.Fragment>
+                  :
+                  <React.Fragment>
+                    <h2>Rankings</h2>
+                    <ScrollableRankingTable rankings={rankings}/>
+                  </React.Fragment>
+                }
               </React.Fragment>
             }
             </MiddlePanelContent>
