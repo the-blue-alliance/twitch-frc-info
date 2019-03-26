@@ -24,7 +24,7 @@ const Alliance = styled.div`
 const TeamContainer = styled.div`
   flex: 1;
   color: #000;
-  font-size: 1.75vw;
+  font-size: 1.5vw;
   padding: 0.25vw;
 `
 
