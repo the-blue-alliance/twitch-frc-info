@@ -3,7 +3,7 @@ import styled from 'styled-components'
 
 import BracketContext from './BracketContext'
 import Spacer from './Spacer'
-import PlayoffMatchupAlliance from './PlayoffMatchupAlliance'
+import PlayoffMatchupFinalsAlliance from './PlayoffMatchupFinalsAlliance'
 
 const CenterSpacer = styled.div`
   min-height: 1vw;
@@ -28,22 +28,20 @@ const PlayoffFinalsMatchup = React.memo(({eventKey, winner}) => {
         return (
           <React.Fragment>
             <Spacer />
-            <PlayoffMatchupAlliance
+            <PlayoffMatchupFinalsAlliance
               eventKey={eventKey}
               color='red'
               seed={redSeed}
               wins={redWins}
               winner={winner}
-              isFinals
             />
             <CenterSpacer />
-            <PlayoffMatchupAlliance
+            <PlayoffMatchupFinalsAlliance
               eventKey={eventKey}
               color='blue'
               seed={blueSeed}
               wins={blueWins}
               winner={winner}
-              isFinals
             />
             <Spacer />
           </React.Fragment>

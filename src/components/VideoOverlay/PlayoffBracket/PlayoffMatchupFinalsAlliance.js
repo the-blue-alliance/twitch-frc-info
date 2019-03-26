@@ -3,10 +3,14 @@ import styled from 'styled-components'
 
 import BracketContext from './BracketContext'
 
+import GoldMedal from '../../../images/medal-gold.png'
+import SilverMedal from '../../../images/medal-silver.png'
+
+
 
 const Alliance = styled.div`
   display: flex;
-  flex-direction: ${props => props.rightSide ? 'row-reverse' : 'row'};
+  flex-direction: ${props => props.isRed ? 'column-reverse' : 'column'};
   text-align: center;
   background-color: #fff;
   border-radius: 4px;
@@ -17,41 +21,47 @@ const Alliance = styled.div`
   };
   overflow: hidden;
   opacity: ${props => props.notSelected ? 0.3 : 1}
-  ${props => props.rightSide ? 'margin-left' : 'margin-right'}: 0.5vw;
   ${props => props.isRed ? 'margin-top' : 'margin-bottom'}: 0.25vw;
 `
 
 const TeamContainer = styled.div`
-  flex: 1;
   color: #000;
   font-size: 1.75vw;
   padding: 0.25vw;
 `
 
-const SeedContainer = styled.div`
+const WinsContainer = styled.div`
   display: flex;
   align-items: center;
   padding: 0.25vw;
   background-color: ${props => props.isRed ? '#d04f27' : '#508bd3'};
-`
-
-const WinsContainer = styled.div`
-  display: flex;
-  align-items: center;
-  padding: 0.5vw;
-  background-color: ${props => props.isRed ? '#d04f27' : '#508bd3'};
   ${props => props.isWinner && 'font-weight: bold;'}
+  padding: 0.5vw;
 `
 
 const Seed = styled.div`
+  flex: 1;
+  text-align: left;
   font-size: 1.5vw;
+  padding-left: 0.25vw;
 `
 
 const Wins = styled.div`
   font-size: 2.5vw;
 `
 
-const PlayoffMatchupAlliance = React.memo(({eventKey, color, seed, wins, winner, rightSide}) => {
+const Medal = styled.div`
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+`
+
+const MedalIcon = styled.img`
+  height: 2vw;
+`
+
+const PlayoffMatchupFinalsAlliance = React.memo(({eventKey, color, seed, wins, winner}) => {
   const isRed = color === 'red'
   const isWinner = color === winner
   return (
@@ -61,15 +71,20 @@ const PlayoffMatchupAlliance = React.memo(({eventKey, color, seed, wins, winner,
           <Alliance
             isRed={isRed}
             notSelected={selectedSeed !== null && selectedSeed !== seed}
-            rightSide={rightSide}
             onMouseEnter={() => setSelectedSeed(seed)}
             onMouseLeave={() => setSelectedSeed(null)}
           >
-            <SeedContainer
+            <WinsContainer
               isRed={isRed}
+              isWinner={isWinner}
             >
               <Seed>{seed}.</Seed>
-            </SeedContainer>
+              <Wins>{wins}</Wins>
+              <Medal>
+                {winner && isWinner && <MedalIcon src={GoldMedal} alt='Gold medal'/>}
+                {winner && !isWinner && <MedalIcon src={SilverMedal} alt='Silver medal'/>}
+              </Medal>
+            </WinsContainer>
             <TeamContainer>
               {allianceTeamKeys && allianceTeamKeys[seed-1] ?
                 allianceTeamKeys[seed-1].map(teamKey => (
@@ -81,12 +96,6 @@ const PlayoffMatchupAlliance = React.memo(({eventKey, color, seed, wins, winner,
                 <div>?</div>
               }
             </TeamContainer>
-            <WinsContainer
-              isRed={isRed}
-              isWinner={isWinner}
-            >
-              <Wins>{wins}</Wins>
-            </WinsContainer>
           </Alliance>
         )
       }}
@@ -94,4 +103,4 @@ const PlayoffMatchupAlliance = React.memo(({eventKey, color, seed, wins, winner,
   )
 })
 
-export default PlayoffMatchupAlliance
+export default PlayoffMatchupFinalsAlliance
