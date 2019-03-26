@@ -33,9 +33,9 @@ const Container = styled.div`
 const HoverArea = styled.div`
   position: absolute;
   top: 25%;
-  right: 10%;
+  right: 25%;
   bottom: 25%;
-  left: 10%;
+  left: 25%;
   z-index: ${props => props.hovered || props.hoverTimedOut ? -1 : 1000};
 `
 
